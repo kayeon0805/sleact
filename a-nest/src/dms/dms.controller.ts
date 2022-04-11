@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { UndefinedToNull } from 'common/interceptors/undefinedToNull.interceptor';
 
+@UseInterceptors(UndefinedToNull)
 @ApiTags('DM')
 @Controller('api/workspaces/:url/dms')
 export class DmsController {

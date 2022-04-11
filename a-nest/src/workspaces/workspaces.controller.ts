@@ -1,6 +1,8 @@
-import { Controller, Delete, Get, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { UndefinedToNull } from 'common/interceptors/undefinedToNull.interceptor';
 
+@UseInterceptors(UndefinedToNull)
 @ApiTags('WORKSPACE')
 @Controller('api/workspaces')
 export class WorkspacesController {

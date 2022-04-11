@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { ChannelsModule } from './channels/channels.module';
 import { DmsModule } from './dms/dms.module';
+import { UsersService } from './users/users.service';
 
 @Module({
   // isGlobal: true이면 ConfigService를 쓸 수 있음
@@ -18,7 +19,7 @@ import { DmsModule } from './dms/dms.module';
     DmsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [AppService, UsersService],
 })
 export class AppModule implements NestModule {
   // middleware들은 consumer에 연결

@@ -1,24 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
+import { Users } from 'src/entities/Users';
 
-export class JoinRequestDto {
-  @ApiProperty({
-    example: 'kayeon123@gmail.com',
-    description: '이메일',
-    required: true,
-  })
-  public email: string;
-
-  @ApiProperty({
-    example: '김가연',
-    description: '닉네임',
-    required: true,
-  })
-  public nickname: string;
-
-  @ApiProperty({
-    example: 'sleactpassword',
-    description: '비밀번호',
-    required: true,
-  })
-  public password: string;
-}
+// PickType: Users 에서 정의한 @ApiProperty({ example: 1, description: '사용자 아이디'})처럼
+// 원하는 것들만 DTO로 가져올 수 있음. 중복 제거
+export class JoinRequestDto extends PickType(Users, [
+  'email',
+  'nickname',
+  'password',
+] as const) {}

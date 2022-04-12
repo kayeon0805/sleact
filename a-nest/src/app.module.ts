@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
@@ -8,6 +8,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
 import { ChannelsModule } from './channels/channels.module';
 import { DmsModule } from './dms/dms.module';
 import { UsersService } from './users/users.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as ormcofig from '../ormconfig';
 
 @Module({
   // isGlobal: true이면 ConfigService를 쓸 수 있음
@@ -17,6 +19,7 @@ import { UsersService } from './users/users.service';
     WorkspacesModule,
     ChannelsModule,
     DmsModule,
+    TypeOrmModule.forRoot(ormcofig),
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],

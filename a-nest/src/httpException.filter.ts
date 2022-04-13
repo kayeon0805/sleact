@@ -12,10 +12,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const status = exception.getStatus();
     const err = exception.getResponse() as
-      | string
-      | { error: string; statusCode: 400; message: string[] };
+      | { message: any; statusCode: number }
+      | { error: string; statusCode: 400; message: string[] }; // class validator
 
-    console.log(status, err);
-    response.status(status).json({ msg: err });
+    // class-validator 에러
+    if (typeof err !== 'string' && err.statusCode === 400) {
+      return response.status(status).json({
+        success: false,
+        code: status,
+        data: err.message,
+      });
+    }
+
+    response.status(status).json({
+      success: false,
+      code: status,
+      data: err.message,
+    });
   }
 }

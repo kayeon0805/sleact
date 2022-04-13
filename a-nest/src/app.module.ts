@@ -10,6 +10,7 @@ import { DmsModule } from './dms/dms.module';
 import { UsersService } from './users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as ormcofig from '../ormconfig';
+import { Users } from './entities/Users';
 
 @Module({
   // isGlobal: true이면 ConfigService를 쓸 수 있음
@@ -20,6 +21,7 @@ import * as ormcofig from '../ormconfig';
     ChannelsModule,
     DmsModule,
     TypeOrmModule.forRoot(ormcofig),
+    TypeOrmModule.forFeature([Users]),
   ],
   controllers: [AppController],
   providers: [AppService, UsersService],

@@ -11,11 +11,13 @@ import { UsersService } from './users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ormcofig from '../ormconfig';
 import { Users } from './entities/Users';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   // isGlobal: true이면 ConfigService를 쓸 수 있음
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
     UsersModule,
     WorkspacesModule,
     ChannelsModule,

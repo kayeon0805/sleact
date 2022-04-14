@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
@@ -9,7 +9,7 @@ import { ChannelsModule } from './channels/channels.module';
 import { DmsModule } from './dms/dms.module';
 import { UsersService } from './users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as ormcofig from '../ormconfig';
+import ormcofig from '../ormconfig';
 import { Users } from './entities/Users';
 
 @Module({
@@ -20,7 +20,10 @@ import { Users } from './entities/Users';
     WorkspacesModule,
     ChannelsModule,
     DmsModule,
-    TypeOrmModule.forRoot(ormcofig),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: ormcofig,
+    }),
     TypeOrmModule.forFeature([Users]),
   ],
   controllers: [AppController],

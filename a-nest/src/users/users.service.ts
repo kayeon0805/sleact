@@ -5,20 +5,24 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/Users';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
+import { WorkspaceMembers } from 'src/entities/WorkspaceMembers';
+import { ChannelMembers } from 'src/entities/ChannelMembers';
 
 @Injectable()
 export class UsersService {
   constructor(
     // reporitory가 db로 query 날림
-    @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
+    private connection: Connection,
   ) {}
   getUser() {}
 
   async join(email: string, nickname: string, password: string) {
-    const user = await this.usersRepository.findOne({
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const user = await queryRunner.manager.getRepository(Users).findOne({
       where: { email },
     });
     // 이미 존재하는 유저라고 에러
@@ -26,10 +30,28 @@ export class UsersService {
       throw new UnauthorizedException('이미 존재하는 사용자입니다.');
     }
     const hashedPassword = await bcrypt.hash(password, 12);
-    await this.usersRepository.save({
-      email,
-      nickname,
-      password: hashedPassword,
-    });
+    try {
+      const returned = await queryRunner.manager.getRepository(Users).save({
+        email,
+        nickname,
+        password: hashedPassword,
+      });
+      await queryRunner.manager.getRepository(WorkspaceMembers).save({
+        UserId: returned.id,
+        WorkspaceId: 1,
+      });
+      await queryRunner.manager.getRepository(ChannelMembers).save({
+        UserId: returned.id,
+        ChannelId: 1,
+      });
+      await queryRunner.commitTransaction();
+      return true;
+    } catch (error) {
+      console.error(error);
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

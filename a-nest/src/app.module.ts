@@ -10,10 +10,7 @@ import { DmsModule } from './dms/dms.module';
 import { UsersService } from './users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ormcofig from '../ormconfig';
-import { Users } from './entities/Users';
 import { AuthModule } from './auth/auth.module';
-import { WorkspaceMembers } from './entities/WorkspaceMembers';
-import { ChannelMembers } from './entities/ChannelMembers';
 
 @Module({
   // isGlobal: true이면 ConfigService를 쓸 수 있음

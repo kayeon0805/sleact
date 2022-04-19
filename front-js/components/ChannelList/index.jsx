@@ -34,12 +34,10 @@ const ChannelList = () => {
   );
 
   useEffect(() => {
-    console.log('ChannelList: workspace 바꼈다', workspace, location.pathname);
     setCountList({});
   }, [workspace, location]);
 
   const onMessage = (data) => {
-    console.log('message 왔다', data);
     const mentions = data.content.match(/@\[(.+?)]\((\d)\)/g);
     if (mentions?.find((v) => v.match(/@\[(.+?)]\((\d)\)/)[2] === userData?.id.toString())) {
       return setCountList((list) => {
@@ -59,10 +57,8 @@ const ChannelList = () => {
 
   useEffect(() => {
     socket?.on('message', onMessage);
-    console.log('socket on message', socket?.hasListeners('message'));
     return () => {
       socket?.off('message', onMessage);
-      console.log('socket off message', socket?.hasListeners('message'));
     };
   }, [socket]);
 

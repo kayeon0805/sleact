@@ -38,7 +38,6 @@ import {
 
 const Workspace = () => {
   const params = useParams();
-  // console.log('params', params, 'location', location, 'routeMatch', routeMatch, 'history', history);
   const { workspace } = params;
   const [socket, disconnectSocket] = useSocket(workspace);
   const { data: userData, error: loginError, revalidate: revalidateUser } = useSWR('/api/users', fetcher);

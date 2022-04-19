@@ -59,7 +59,6 @@ const Channel = () => {
         }, false).then(() => {
           setChat('');
           if (scrollbarRef.current) {
-            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
             scrollbarRef.current.scrollToBottom();
           }
         });
@@ -84,7 +83,6 @@ const Channel = () => {
             scrollbarRef.current.getScrollHeight() <
             scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
           ) {
-            console.log('scrollToBottom!', scrollbarRef.current?.getValues());
             scrollbarRef.current.scrollToBottom();
           } else {
             toast.success('새 메시지가 도착했습니다.', {
@@ -108,7 +106,6 @@ const Channel = () => {
 
   useEffect(() => {
     if (chatData?.length === 1) {
-      console.log('toBottomWhenLoaded', chatData, scrollbarRef.current?.getValues());
       scrollbarRef.current?.scrollToBottom();
     }
   }, [chatData]);

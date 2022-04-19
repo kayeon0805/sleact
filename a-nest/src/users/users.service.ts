@@ -1,21 +1,13 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Users } from 'src/entities/Users';
-import { Connection, Repository } from 'typeorm';
+import { Connection } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { WorkspaceMembers } from 'src/entities/WorkspaceMembers';
 import { ChannelMembers } from 'src/entities/ChannelMembers';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    // reporitory가 db로 query 날림
-    private connection: Connection,
-  ) {}
+  constructor(private connection: Connection) {}
   getUser() {}
 
   async join(email: string, nickname: string, password: string) {

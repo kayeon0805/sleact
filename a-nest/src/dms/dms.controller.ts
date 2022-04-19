@@ -35,10 +35,7 @@ export class DmsController {
     description: '불러올 페이지',
   })
   @Get(':id/chats')
-  getChat(@Query() query, @Param() param) {
-    console.log(query.perPage, query.page);
-    console.log(param.id, param.url);
-  }
+  getChat(@Query() query, @Param() param) {}
 
   @Post(':id/chats')
   postChat(@Body() body) {}

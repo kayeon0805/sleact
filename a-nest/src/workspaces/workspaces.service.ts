@@ -72,16 +72,14 @@ export class WorkspacesService {
     if (!user) {
       return null;
     }
-    const workspaceMember = this.workspaceMembersRepository.create({
-      WorkspaceId: workspace.id,
-      UserId: user.id,
-    });
+    const workspaceMember = new WorkspaceMembers();
+    workspaceMember.WorkspaceId = workspace.id;
+    workspaceMember.UserId = user.id;
     await this.workspacesRepository.save(workspaceMember);
     const channelId = workspace.Channels.find((v) => v.name === '일반').id;
-    const channelMember = this.channelMembersRepository.create({
-      ChannelId: channelId,
-      UserId: user.id,
-    });
+    const channelMember = new ChannelMembers();
+    channelMember.ChannelId = channelId;
+    channelMember.UserId = user.id;
     await this.channelMembersRepository.save(channelMember);
   }
 

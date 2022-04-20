@@ -5,6 +5,7 @@ import { ChannelMembers } from 'src/entities/ChannelMembers';
 import { Channels } from 'src/entities/Channels';
 import { Users } from 'src/entities/Users';
 import { Workspaces } from 'src/entities/Workspaces';
+import { EventsGateway } from 'src/events/events.gateway';
 import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class ChannelsService {
     private channelChatsRepository: Repository<ChannelChats>,
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
+    private eventsGateway: EventsGateway,
   ) {}
 
   async findById(id: number) {
@@ -57,15 +59,13 @@ export class ChannelsService {
     const workspace = await this.workspacesRepository.findOne({
       where: { url },
     });
-    const channel = this.channelsRepository.create({
-      name,
-      WorkspaceId: workspace.id,
-    });
+    const channel = new Channels();
+    channel.name = name;
+    channel.WorkspaceId = workspace.id;
     const channelReturned = await this.channelsRepository.save(channel);
-    const channelMember = this.channelMembersRepository.create({
-      UserId: myId,
-      ChannelId: channelReturned.id,
-    });
+    const channelMember = new ChannelMembers();
+    channelMember.UserId = myId;
+    channelMember.ChannelId = channelReturned.id;
     await this.channelMembersRepository.save(channelMember);
   }
 
@@ -103,10 +103,9 @@ export class ChannelsService {
     if (!user) {
       throw new NotFoundException('사용자가 존재하지 않습니다.');
     }
-    const channelMember = this.channelMembersRepository.create({
-      ChannelId: channel.id,
-      UserId: user.id,
-    });
+    const channelMember = new ChannelMembers();
+    channelMember.ChannelId = channel.id;
+    channelMember.UserId = user.id;
     await this.channelMembersRepository.save(channelMember);
   }
 
@@ -159,16 +158,80 @@ export class ChannelsService {
     if (!channel) {
       throw new NotFoundException('채널이 존재하지 않습니다.');
     }
-    const chats = this.channelChatsRepository.create({
-      content,
-      UserId: myId,
-      ChannelId: channel.id,
-    });
+    const chats = new ChannelChats();
+    chats.content = content;
+    chats.UserId = myId;
+    chats.ChannelId = channel.id;
     const savedChat = await this.channelChatsRepository.save(chats);
     const chatWithUser = await this.channelChatsRepository.findOne({
       where: { id: savedChat.id },
       relations: ['User', 'Channel'],
     });
     // socket.io로 워크스페이스 + 채널 사용자한테 전송
+    this.eventsGateway.server
+      .to(`/ws-${url}-${channel.id}`)
+      .emit('message', chatWithUser);
+  }
+
+  async createWorkspaceChannelChats(
+    url: string,
+    name: string,
+    content: string,
+    myId: number,
+  ) {
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    const chats = new ChannelChats();
+    chats.content = content;
+    chats.UserId = myId;
+    chats.ChannelId = channel.id;
+    const savedChat = await this.channelChatsRepository.save(chats);
+    const chatWithUser = await this.channelChatsRepository.findOne({
+      where: { id: savedChat.id },
+      relations: ['User', 'Channel'],
+    });
+    this.eventsGateway.server
+      // .of(`/ws-${url}`)
+      .to(`/ws-${url}-${chatWithUser.ChannelId}`)
+      .emit('message', chatWithUser);
+  }
+
+  async createWorkspaceChannelImages(
+    url: string,
+    name: string,
+    files: Express.Multer.File[],
+    myId: number,
+  ) {
+    console.log(files);
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    if (!channel) {
+      throw new NotFoundException('채널이 존재하지 않습니다.');
+    }
+    for (let i = 0; i < files.length; i++) {
+      const chats = new ChannelChats();
+      chats.content = files[i].path;
+      chats.UserId = myId;
+      chats.ChannelId = channel.id;
+      const savedChat = await this.channelChatsRepository.save(chats);
+      const chatWithUser = await this.channelChatsRepository.findOne({
+        where: { id: savedChat.id },
+        relations: ['User', 'Channel'],
+      });
+      this.eventsGateway.server
+        // .of(`/ws-${url}`)
+        .to(`ws-${url}-${chatWithUser.ChannelId}`)
+        .emit('message', chatWithUser);
+    }
   }
 }

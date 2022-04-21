@@ -32,6 +32,8 @@ export class DMsService {
     );
   }
 
+  // url과 일치하는 워크스페이스를 찾고, 그 워크스페이스에 속한 dm을 찾고
+  // 파라미터 아이디와 내 아이디가 주고받은 dm을 일정 갯수만큼 최신순으로 반환
   async getWorkspaceDMChats(
     url: string,
     id: number,

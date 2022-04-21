@@ -83,6 +83,8 @@ export class WorkspacesService {
   }
 
   async getWorkspaceMembers(url: string) {
+    // url과 일치하는 워크스페이스를 찾고
+    // 해당 워크스페이스의 멤버들을 찾아 반환
     return this.usersRepository
       .createQueryBuilder('user')
       .innerJoin('user.WorkspaceMembers', 'm')

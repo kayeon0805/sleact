@@ -29,6 +29,8 @@ export class ChannelsService {
   }
 
   async getWorkspaceChannels(url: string, myId: number) {
+    // url에 해당하는 워크스페이스에 속한 채널을 찾고
+    // 그 채널에 속한 멤버들 중 유저가 속한 채널의 정보를 찾아 해당 채널, 워크스페이스의 정보를 반환함
     return this.channelsRepository
       .createQueryBuilder('channels')
       .innerJoinAndSelect(
@@ -55,6 +57,8 @@ export class ChannelsService {
     });
   }
 
+  // url과 일치하는 워크스페이스를 찾고 그 워크스페이스와 연결된 채널을 만든다.
+  // 만든 채널에 해당 채널을 만든 아이디를 넣는다.
   async createWorkspaceChannels(url: string, name: string, myId: number) {
     const workspace = await this.workspacesRepository.findOne({
       where: { url },
@@ -69,6 +73,8 @@ export class ChannelsService {
     await this.channelMembersRepository.save(channelMember);
   }
 
+  // url에 해당하는 워크스페이스를 찾고
+  // name과 일치하는 채널을 찾아 해당 채널 멤버들을 반환
   async getWorkspaceChannelMembers(url: string, name: string) {
     return this.usersRepository
       .createQueryBuilder('user')
@@ -109,6 +115,9 @@ export class ChannelsService {
     await this.channelMembersRepository.save(channelMember);
   }
 
+  // url에 해당하는 워크스페이스를 찾고
+  // 그 워크스페이스에서 name과 일치하는 채널을 찾고
+  // user들 정보가 담긴 채널 채팅을 일정 갯수만큼 최신순으로 반환
   async getWorkspaceChannelChats(
     url: string,
     name: string,

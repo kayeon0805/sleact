@@ -22,6 +22,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  // 담은 user.id로 유저 아이디, 이메일, 닉네임과 해당 유저가 속한 워크스페이스 정보를 받아옴
   @ApiCookieAuth('connect.sid')
   @ApiOperation({ summary: '내 정보 가져오기' })
   @Get()
@@ -29,6 +30,7 @@ export class UsersController {
     return user || false;
   }
 
+  // 로그인을 한 후 request에 user.id를 담음.
   @ApiOperation({ summary: '로그인' })
   @UseGuards(LocalAuthGuard)
   @Post('login')

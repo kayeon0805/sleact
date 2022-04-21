@@ -25,6 +25,8 @@ export class UsersService {
     });
   }
 
+  // 이미 존재하는 사용자인지 체크 후, 아닐 경우 user에 저장하고
+  // 기본 워크스페이스 1번과 기본 채널인 1번으로 저장한다.
   async join(email: string, nickname: string, password: string) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();

@@ -56,10 +56,9 @@ export class WorkspacesService {
     await this.channelMembersRepository.save(channelMember);
   }
 
-  async createWorkspaceMembers(url: string, email: string) {
+  async createWorkspaceMembers(url, email) {
     const workspace = await this.workspacesRepository.findOne({
       where: { url },
-      // relations: ['Channels']
       join: {
         alias: 'workspace',
         innerJoinAndSelect: {
@@ -67,18 +66,18 @@ export class WorkspacesService {
         },
       },
     });
-    // this.workspaceRepository.createQueryBuilder('workspace').innerJoinAndSelect('workspace.Channels', 'channels').getOne();
-    const user = await this.usersRepository.findOne({ where: email });
+    const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
       return null;
     }
     const workspaceMember = new WorkspaceMembers();
     workspaceMember.WorkspaceId = workspace.id;
     workspaceMember.UserId = user.id;
-    await this.workspacesRepository.save(workspaceMember);
-    const channelId = workspace.Channels.find((v) => v.name === '일반').id;
+    await this.workspaceMembersRepository.save(workspaceMember);
     const channelMember = new ChannelMembers();
-    channelMember.ChannelId = channelId;
+    channelMember.ChannelId = workspace.Channels.find(
+      (v) => v.name === '일반',
+    ).id;
     channelMember.UserId = user.id;
     await this.channelMembersRepository.save(channelMember);
   }

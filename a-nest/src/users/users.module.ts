@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChannelMembers } from 'src/entities/ChannelMembers';
 import { Users } from 'src/entities/Users';
 import { WorkspaceMembers } from 'src/entities/WorkspaceMembers';
-import { ChannelMembers } from 'src/entities/ChannelMembers';
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 
 @Module({
   // repository UsersService에 injection

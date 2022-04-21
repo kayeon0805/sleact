@@ -12,6 +12,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormcofig from '../ormconfig';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
+import { WorkspaceMembers } from './entities/WorkspaceMembers';
+import { Users } from './entities/Users';
+import { ChannelMembers } from './entities/ChannelMembers';
 
 @Module({
   // isGlobal: true이면 ConfigService를 쓸 수 있음
@@ -26,6 +29,7 @@ import { EventsModule } from './events/events.module';
       inject: [ConfigService],
       useFactory: ormcofig,
     }),
+    TypeOrmModule.forFeature([Users, WorkspaceMembers, ChannelMembers]),
     EventsModule,
   ],
   controllers: [AppController],

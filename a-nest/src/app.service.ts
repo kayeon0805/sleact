@@ -5,10 +5,8 @@ import { UsersService } from './users/users.service';
 export class AppService {
   constructor(private readonly usersService: UsersService) {}
 
-  async getHello() {
-    this.usersService.getUser();
-    this.getWow();
-    return process.env.SECRET;
+  getHello(): string {
+    return 'Hello World!';
   }
 
   async getWow() {}
